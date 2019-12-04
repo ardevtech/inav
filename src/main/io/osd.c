@@ -100,6 +100,7 @@
 #include "sensors/pitotmeter.h"
 #include "sensors/temperature.h"
 #include "sensors/esc_sensor.h"
+#include "navigation/navigation.h"
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
 #include "hardware_revision.h"
@@ -1402,6 +1403,30 @@ static bool osdDrawSingleElement(uint8_t item)
             }
             return true;
         }
+    case OSD_WM_HEADING:
+        {
+            int wingmanDirection = Wingman_location.relativeBearing;
+            osdDrawDirArrow(osdDisplayPort, osdGetDisplayPortCanvas(), OSD_DRAW_POINT_GRID(elemPosX, elemPosY), wingmanDirection, true);
+
+            return true;
+        }
+    case OSD_WM_DISTANCE:
+        {
+            osdFormatDistanceSymbol(buff, Wingman_location.distance*100);
+            break;
+        }
+    case OSD_WM_ALTITUDE:
+        {
+            int32_t alt = Wingman_location.alt;
+            osdFormatAltitudeSymbol(buff, alt);
+            
+            break;
+        }
+    case OSD_WM_SPEED:
+        {
+            osdFormatVelocityStr(buff, Wingman_location.gs, false);
+            break;
+        }
 
     case OSD_HOME_HEADING_ERROR:
         {
@@ -2693,6 +2718,12 @@ void pgResetFn_osdConfig(osdConfig_t *osdConfig)
         }
     }
 
+    osdConfig->item_pos[0][OSD_WM_HEADING] = OSD_POS(1, 8);
+    osdConfig->item_pos[0][OSD_WM_DISTANCE] = OSD_POS(1, 9);
+    osdConfig->item_pos[0][OSD_WM_SPEED] = OSD_POS(2, 8);
+    osdConfig->item_pos[0][OSD_WM_ALTITUDE] = OSD_POS(3, 8);
+
+
     osdConfig->rssi_alarm = 20;
     osdConfig->time_alarm = 10;
     osdConfig->alt_alarm = 100;
@@ -3260,6 +3291,7 @@ displayPort_t *osdGetDisplayPort(void)
 
 displayCanvas_t *osdGetDisplayPortCanvas(void)
 {
+    
 #if defined(USE_CANVAS)
     if (osdDisplayHasCanvas) {
         return &osdCanvas;

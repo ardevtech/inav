@@ -29,6 +29,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "platform.h"
 
@@ -72,12 +73,17 @@
 #include "sensors/sensors.h"
 #include "sensors/pitotmeter.h"
 
+#include "telemetry/ltmparser.h"
 #include "telemetry/ltm.h"
 #include "telemetry/telemetry.h"
+#include "fc/cli.h"
+#include "drivers/serial.h"
 
-
-#define TELEMETRY_LTM_INITIAL_PORT_MODE MODE_TX
+#define TELEMETRY_LTM_INITIAL_PORT_MODE MODE_RXTX
 #define LTM_CYCLETIME   100
+#define LTM_DEBUGTIME   1000
+#define LTM_INBOUNDTIME   2
+
 #define LTM_SCHEDULE_SIZE (1000/LTM_CYCLETIME)
 
 static serialPort_t *ltmPort;
@@ -86,6 +92,12 @@ static bool ltmEnabled;
 static portSharing_e ltmPortSharing;
 static uint8_t ltmFrame[LTM_MAX_MESSAGE_SIZE];
 static uint8_t ltm_x_counter;
+
+//serialPort_t *debugPort;
+
+LtmParserState_t ltmParserState;
+
+int32_t ltmDebugCode = 0;
 
 static void ltm_initialise_packet(sbuf_t *dst)
 {
@@ -381,6 +393,11 @@ static void process_ltm(void)
 void handleLtmTelemetry(void)
 {
     static uint32_t ltm_lastCycleTime;
+    static uint32_t ltm_lastDebugTime;
+    static uint32_t ltm_lastInboundTime;
+    static char debugMessage[256]="";
+    static uint8_t debugPos = 0;
+
     if (!ltmEnabled)
         return;
     if (!ltmPort)
@@ -388,8 +405,39 @@ void handleLtmTelemetry(void)
     const uint32_t now = millis();
     if ((now - ltm_lastCycleTime) >= LTM_CYCLETIME) {
         process_ltm();
+        
         ltm_lastCycleTime = now;
     }
+
+    if (((now - ltm_lastDebugTime) >= LTM_DEBUGTIME))
+    {
+        ltm_lastDebugTime = now;
+        cliDebugMessage(debugMessage);
+    }
+
+    if (((now - ltm_lastInboundTime) >= LTM_INBOUNDTIME))
+    {
+        ltm_lastInboundTime = now;
+        while(serialRxBytesWaiting(ltmPort)) {
+            uint8_t c = serialRead(ltmPort);
+            if (ltmParserAppend(&ltmParserState,c) )
+            {
+                if (ltmParserValid(&ltmParserState))
+                {
+                    // Copy the data frame to somewhere accessible by OSD
+                    memcpy(&Wingman_location,&ltmParserState.wingmanData,sizeof(MFrame_t));
+                }
+
+                ltmParserInit(&ltmParserState);
+                
+            }
+            
+        }
+        
+
+    }
+
+
 }
 
 void freeLtmTelemetryPort(void)
@@ -403,6 +451,17 @@ void initLtmTelemetry(void)
 {
     portConfig = findSerialPortConfig(FUNCTION_TELEMETRY_LTM);
     ltmPortSharing = determinePortSharing(portConfig, FUNCTION_TELEMETRY_LTM);
+    ltmParserInit(&ltmParserState);
+
+/*
+    portDebug = findSerialPortConfig(FUNCTION_MSP);
+    if (debugPort) {
+
+        serialBeginWrite(debugPort);
+        serialWriteBuf(debugPort, "hello\n", 6);
+        serialEndWrite(debugPort);
+    }
+*/
 }
 
 

@@ -72,6 +72,7 @@
 gpsLocation_t GPS_home;
 uint32_t      GPS_distanceToHome;        // distance to home point in meters
 int16_t       GPS_directionToHome;       // direction to home point in degrees
+MFrame_t      Wingman_location;         // relative heading and distance to wingman
 
 radar_pois_t radar_pois[RADAR_MAX_POIS];
 

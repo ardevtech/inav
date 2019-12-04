@@ -167,6 +167,8 @@ static const char * const hardwareSensorStatusNames[] = {
     "NONE", "OK", "UNAVAILABLE", "FAILING"
 };
 
+static char cliMessageBuf[256]="";
+
 static const char * const *sensorHardwareNames[] = {
         gyroNames,
         table_acc_hardware,
@@ -3426,6 +3428,11 @@ static void cliHelp(char *cmdline)
     }
 }
 
+void cliDebugMessage(const char *msg)
+{
+    strncpy(cliMessageBuf,msg,256);
+}
+
 void cliProcess(void)
 {
     if (!cliWriter) {
@@ -3434,6 +3441,11 @@ void cliProcess(void)
 
     // Be a little bit tricky.  Flush the last inputs buffer, if any.
     bufWriterFlush(cliWriter);
+
+    /*if (strlen(cliMessageBuf)>0)
+    {
+        cliPrint(cliMessageBuf);
+    }*/
 
     while (serialRxBytesWaiting(cliPort)) {
         uint8_t c = serialRead(cliPort);

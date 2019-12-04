@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "src"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"platform.h": "c",
+			"stdbool.h": "c",
+			"settings.h": "c"
+		}
+	}
+}

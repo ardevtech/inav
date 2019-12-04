@@ -209,6 +209,7 @@ COMMON_SRC = \
             telemetry/hott.c \
             telemetry/ibus_shared.c \
             telemetry/ibus.c \
+	    telemetry/ltmparser.c \
             telemetry/ltm.c \
             telemetry/mavlink.c \
             telemetry/msp_shared.c \

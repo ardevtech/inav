@@ -29,11 +29,13 @@
 #include "flight/failsafe.h"
 
 #include "io/gps.h"
+#include "telemetry/ltmparser.h"
 
 /* GPS Home location data */
 extern gpsLocation_t        GPS_home;
 extern uint32_t             GPS_distanceToHome;        // distance to home point in meters 
 extern int16_t              GPS_directionToHome;       // direction to home point in degrees
+extern MFrame_t             Wingman_location; // relative heading and distance to wingman
 
 extern bool autoThrottleManuallyIncreased;
 
