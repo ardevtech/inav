@@ -1,0 +1,4 @@
+osd_layout 0 107 2 8 V
+osd_layout 0 108 3 8 V
+osd_layout 0 109 2 9 V
+osd_layout 0 110 2 10 V

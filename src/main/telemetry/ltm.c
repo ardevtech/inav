@@ -396,7 +396,7 @@ void handleLtmTelemetry(void)
     static uint32_t ltm_lastDebugTime;
     static uint32_t ltm_lastInboundTime;
     static char debugMessage[256]="";
-    static uint8_t debugPos = 0;
+
 
     if (!ltmEnabled)
         return;
@@ -418,7 +418,8 @@ void handleLtmTelemetry(void)
     if (((now - ltm_lastInboundTime) >= LTM_INBOUNDTIME))
     {
         ltm_lastInboundTime = now;
-        while(serialRxBytesWaiting(ltmPort)) {
+        uint8_t counter = 0;
+        while(serialRxBytesWaiting(ltmPort) && counter<sizeof(MFrame_t)+6) {
             uint8_t c = serialRead(ltmPort);
             if (ltmParserAppend(&ltmParserState,c) )
             {
@@ -431,6 +432,7 @@ void handleLtmTelemetry(void)
                 ltmParserInit(&ltmParserState);
                 
             }
+            counter++;
             
         }
         
