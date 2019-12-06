@@ -2,6 +2,12 @@
 
 Beta builds available [here](https://drive.google.com/drive/folders/1u4rc1LPlJYr4ldkyTLuRL9MNsf2xE-o_?usp=sharing)
 
+For some OSD settings try this:
+osd_layout 0 107 2 8 V
+osd_layout 0 108 3 8 V
+osd_layout 0 109 2 9 V
+osd_layout 0 110 2 10 V
+
 # INAV - navigation capable flight controller
 
 ![INAV](http://static.rcgroups.net/forums/attachments/6/1/0/3/7/6/a9088858-102-inav.png)
