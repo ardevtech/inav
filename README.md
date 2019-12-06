@@ -1,6 +1,6 @@
 # Modified INAV to support Wingman Tracker Hardware available from ardevtech@gmail.com
 
-Beta builds available [here]:https://drive.google.com/drive/folders/1u4rc1LPlJYr4ldkyTLuRL9MNsf2xE-o_?usp=sharing
+Beta builds available [here](https://drive.google.com/drive/folders/1u4rc1LPlJYr4ldkyTLuRL9MNsf2xE-o_?usp=sharing)
 
 # INAV - navigation capable flight controller
 
